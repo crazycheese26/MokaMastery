@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moka Pot Master Class</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;0,900;1,400&family=Inter:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4; /* Stone 100 */
+            color: #44403c; /* Stone 700 */
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e7e5e4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a8a29e;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #78716c;
+        }
+
+        /* Steam Animation */
+        .steam {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            filter: blur(8px);
+            animation: rise 3s infinite ease-in;
+            opacity: 0;
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-40px) scale(2); opacity: 0; }
+        }
+
+        .active-tab {
+            border-bottom: 3px solid #78350f; /* Amber 900 */
+            color: #78350f;
+            font-weight: 600;
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Diagram Hotspots */
+        .hotspot {
+            transition: all 0.3s ease;
+        }
+        .hotspot:hover {
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        /* Recipe Ingredient Button */
+        .ingredient-btn.selected {
+            background-color: #fcd34d; /* Amber 300 */
+            border-color: #d97706; /* Amber 600 */
+            color: #451a03;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="bg-stone-900 text-stone-100 p-4 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i data-lucide="coffee" class="text-amber-500"></i>
+                <span class="font-bold text-lg tracking-wide">MokaMastery</span>
+            </div>
+            <div class="text-xs sm:text-sm text-stone-400">The Art of Stovetop Espresso</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-4xl mx-auto w-full p-4 space-y-8">
+
+        <!-- Hero Section -->
+        <section class="text-center py-8">
+            <h1 class="text-3xl md:text-5xl font-black text-stone-800 mb-4">Master the Moka Pot</h1>
+            <p class="text-stone-600 max-w-lg mx-auto leading-relaxed">
+                Learn to brew rich, velvety coffee without the bitterness. 
+                Follow this interactive guide to perfect your technique.
+            </p>
+        </section>
+
+        <!-- Tab Navigation -->
+        <div class="flex justify-center border-b border-stone-300 mb-6 overflow-x-auto">
+            <button onclick="switchTab('anatomy')" id="tab-anatomy" class="tab-btn active-tab px-6 py-3 transition-colors hover:bg-stone-200 whitespace-nowrap">Anatomy</button>
+            <button onclick="switchTab('guide')" id="tab-guide" class="tab-btn px-6 py-3 transition-colors hover:bg-stone-200 whitespace-nowrap">Brew Guide</button>
+            <button onclick="switchTab('timer')" id="tab-timer" class="tab-btn px-6 py-3 transition-colors hover:bg-stone-200 whitespace-nowrap">Timer</button>
+            <button onclick="switchTab('recipes')" id="tab-recipes" class="tab-btn px-6 py-3 transition-colors hover:bg-stone-200 whitespace-nowrap">Recipe Lab</button>
+            <button onclick="switchTab('troubleshoot')" id="tab-troubleshoot" class="tab-btn px-6 py-3 transition-colors hover:bg-stone-200 whitespace-nowrap">Fix It</button>
+        </div>
+
+        <!-- SECTION: Anatomy -->
+        <div id="view-anatomy" class="view-section block">
+            <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 md:p-10 flex flex-col md:flex-row items-center gap-10">
+                
+                <!-- SVG Moka Pot Diagram -->
+                <div class="relative w-64 h-96 flex-shrink-0 mx-auto">
+                    <svg viewBox="0 0 200 350" class="w-full h-full drop-shadow-xl">
+                        <!-- Bottom Chamber -->
+                        <path id="part-boiler" onclick="showPartInfo('boiler')" class="hotspot fill-stone-300 stroke-stone-600 hover:fill-amber-100" stroke-width="2" d="M40,330 L20,200 L180,200 L160,330 Z" />
+                        <!-- Safety Valve -->
+                        <circle cx="150" cy="230" r="5" class="fill-yellow-500 stroke-stone-700" />
+                        
+                        <!-- Filter/Funnel Area -->
+                        <rect id="part-filter" onclick="showPartInfo('filter')" x="20" y="190" width="160" height="10" class="hotspot fill-stone-400 stroke-stone-600 hover:fill-amber-100" />
+                        
+                        <!-- Top Chamber -->
+                        <path id="part-collector" onclick="showPartInfo('collector')" class="hotspot fill-stone-200 stroke-stone-600 hover:fill-amber-100" stroke-width="2" d="M20,190 L30,50 L170,50 L180,190 Z" />
+                        
+                        <!-- Lid -->
+                        <path id="part-lid" onclick="showPartInfo('lid')" class="hotspot fill-stone-300 stroke-stone-600 hover:fill-amber-100" stroke-width="2" d="M30,50 Q100,20 170,50" />
+                        <!-- Knob -->
+                        <circle cx="100" cy="35" r="8" class="fill-black" />
+                        
+                        <!-- Handle -->
+                        <path d="M180,100 Q220,100 220,160 Q220,220 165,250" fill="none" stroke="black" stroke-width="12" stroke-linecap="round" />
+                    </svg>
+                    
+                    <!-- Labels -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none text-stone-400 font-bold text-sm opacity-50">
+                        CLICK PARTS
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div class="flex-1 space-y-4">
+                    <div id="anatomy-info" class="bg-stone-50 p-6 rounded-xl border border-stone-200">
+                        <h3 class="text-xl font-bold text-stone-800 flex items-center gap-2">
+                            <i data-lucide="info" class="w-5 h-5 text-amber-600"></i>
+                            <span id="part-title">Select a Part</span>
+                        </h3>
+                        <p id="part-desc" class="mt-2 text-stone-600">Click on any part of the Moka Pot diagram to learn about its function and importance in the brewing process.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="p-3 bg-amber-50 rounded border border-amber-100 text-amber-900">
+                            <strong>Physics:</strong> Steam pressure pushes water up through the coffee.
+                        </div>
+                        <div class="p-3 bg-blue-50 rounded border border-blue-100 text-blue-900">
+                            <strong>Result:</strong> Strong, viscious coffee similar to espresso.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: Brew Guide -->
+        <div id="view-guide" class="view-section hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                <!-- Progress Bar -->
+                <div class="w-full bg-stone-100 h-2">
+                    <div id="progress-bar" class="bg-amber-600 h-2 transition-all duration-300" style="width: 20%"></div>
+                </div>
+
+                <div class="p-6 md:p-10 min-h-[400px] flex flex-col justify-between" id="step-container">
+                    <!-- Dynamic Content Loaded Here -->
+                </div>
+
+                <!-- Controls -->
+                <div class="bg-stone-50 p-4 flex justify-between items-center border-t border-stone-200">
+                    <button onclick="changeStep(-1)" id="btn-prev" class="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-stone-200 disabled:opacity-50 disabled:cursor-not-allowed text-stone-600 font-semibold">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Previous
+                    </button>
+                    <span id="step-indicator" class="text-stone-400 font-mono text-sm">Step 1 of 5</span>
+                    <button onclick="changeStep(1)" id="btn-next" class="bg-stone-800 text-white flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-stone-700 shadow-md transition-all">
+                        Next <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: Timer -->
+        <div id="view-timer" class="view-section hidden">
+            <div class="bg-stone-800 text-white rounded-2xl shadow-xl p-8 md:p-12 text-center relative overflow-hidden">
+                <!-- Steam Visuals -->
+                <div id="steam-container" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none opacity-0 transition-opacity duration-1000">
+                    <div class="steam" style="left: 45%; bottom: 40%; width: 20px; height: 20px;"></div>
+                    <div class="steam" style="left: 55%; bottom: 40%; width: 30px; height: 30px; animation-delay: 1s;"></div>
+                    <div class="steam" style="left: 50%; bottom: 35%; width: 25px; height: 25px; animation-delay: 2s;"></div>
+                </div>
+
+                <h3 class="text-stone-400 uppercase tracking-widest text-sm font-semibold mb-6">Brew Timer</h3>
+                
+                <div class="text-7xl md:text-9xl font-mono font-bold mb-8 tabular-nums tracking-tighter" id="timer-display">
+                    00:00
+                </div>
+
+                <div class="flex justify-center gap-4 relative z-10">
+                    <button onclick="toggleTimer()" id="btn-timer-toggle" class="bg-amber-600 hover:bg-amber-500 text-white px-8 py-4 rounded-full font-bold text-xl transition-all shadow-lg hover:shadow-amber-900/50 flex items-center gap-2">
+                        <i data-lucide="play" id="icon-play"></i> <span id="text-play">Start Brew</span>
+                    </button>
+                    <button onclick="resetTimer()" class="bg-stone-700 hover:bg-stone-600 text-stone-300 px-4 py-4 rounded-full transition-all">
+                        <i data-lucide="rotate-ccw"></i>
+                    </button>
+                </div>
+
+                <div class="mt-8 bg-stone-700/50 inline-block px-6 py-3 rounded-lg text-stone-300 text-sm">
+                    <strong>Target:</strong> Listen for the "gurgle." Usually 3-5 minutes depending on size.
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: Recipe Lab (NEW) -->
+        <div id="view-recipes" class="view-section hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Ingredients Panel -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                    <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-stone-800">
+                        <i data-lucide="flask-conical" class="text-amber-600"></i> Recipe Lab
+                    </h3>
+                    <p class="text-stone-600 mb-6 text-sm">Select ingredients to mix with your Moka Pot coffee.</p>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- Moka Coffee (Always On) -->
+                        <div class="p-4 rounded-lg border border-amber-500 bg-amber-100 text-amber-900 font-bold flex items-center gap-2 cursor-default">
+                            <i data-lucide="coffee" class="w-5 h-5"></i> Moka Shot
+                        </div>
+                        
+                        <!-- Toggle Ingredients -->
+                        <button onclick="toggleIngredient('water')" id="ing-water" class="ingredient-btn p-4 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 flex items-center gap-2 transition-all">
+                            <i data-lucide="droplets" class="w-5 h-5"></i> Hot Water
+                        </button>
+                        
+                        <button onclick="toggleIngredient('milk')" id="ing-milk" class="ingredient-btn p-4 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 flex items-center gap-2 transition-all">
+                            <i data-lucide="milk" class="w-5 h-5"></i> Steamed Milk
+                        </button>
+
+                        <button onclick="toggleIngredient('foam')" id="ing-foam" class="ingredient-btn p-4 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 flex items-center gap-2 transition-all">
+                            <i data-lucide="cloud" class="w-5 h-5"></i> Milk Foam
+                        </button>
+
+                        <button onclick="toggleIngredient('ice')" id="ing-ice" class="ingredient-btn p-4 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 flex items-center gap-2 transition-all">
+                            <i data-lucide="snowflake" class="w-5 h-5"></i> Ice Cubes
+                        </button>
+                        
+                        <button onclick="toggleIngredient('tonic')" id="ing-tonic" class="ingredient-btn p-4 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 flex items-center gap-2 transition-all">
+                            <i data-lucide="glass-water" class="w-5 h-5"></i> Tonic Water
+                        </button>
+
+                        <button onclick="toggleIngredient('chocolate')" id="ing-chocolate" class="ingredient-btn p-4 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 flex items-center gap-2 transition-all">
+                            <i data-lucide="cookie" class="w-5 h-5"></i> Chocolate
+                        </button>
+                    </div>
+
+                    <button onclick="resetRecipe()" class="mt-6 text-sm text-stone-400 hover:text-stone-600 underline">Reset Ingredients</button>
+                </div>
+
+                <!-- Result Panel -->
+                <div class="bg-stone-800 text-stone-100 p-8 rounded-2xl shadow-xl flex flex-col justify-center items-center text-center min-h-[300px]">
+                    
+                    <div id="recipe-icon" class="mb-6 p-6 bg-stone-700 rounded-full transition-all duration-300">
+                        <i data-lucide="coffee" class="w-12 h-12 text-amber-500"></i>
+                    </div>
+
+                    <h2 id="recipe-name" class="text-3xl font-serif font-bold text-amber-400 mb-3 animate-pulse">Stovetop Espresso</h2>
+                    
+                    <p id="recipe-desc" class="text-stone-300 leading-relaxed max-w-sm">
+                        The classic Moka brew. Intense, rich, and viscous. Similar to espresso but with a unique, slightly roasted profile.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: Troubleshooting -->
+        <div id="view-troubleshoot" class="view-section hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Quiz Side -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="text-amber-600"></i> Knowledge Check
+                    </h3>
+                    
+                    <div id="quiz-container">
+                        <!-- Questions injected here -->
+                    </div>
+                </div>
+
+                <!-- Accordion Side -->
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+                        <button onclick="toggleAccordion(1)" class="w-full text-left p-4 font-semibold flex justify-between items-center hover:bg-stone-50">
+                            Why is my coffee bitter?
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400"></i>
+                        </button>
+                        <div id="acc-1" class="hidden p-4 bg-stone-50 text-stone-600 text-sm border-t border-stone-100">
+                            Bitterness usually comes from brewing too hot or too long. Try:
+                            <ul class="list-disc ml-4 mt-2 space-y-1">
+                                <li>Starting with boiling water in the base.</li>
+                                <li>Using a slightly coarser grind.</li>
+                                <li>Removing from heat immediately when it starts gurgling.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+                        <button onclick="toggleAccordion(2)" class="w-full text-left p-4 font-semibold flex justify-between items-center hover:bg-stone-50">
+                            It's sputtering everywhere!
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400"></i>
+                        </button>
+                        <div id="acc-2" class="hidden p-4 bg-stone-50 text-stone-600 text-sm border-t border-stone-100">
+                            This usually means the heat is too high. The water is boiling violently instead of creating steady pressure. Turn your stove down to low/medium-low.
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+                        <button onclick="toggleAccordion(3)" class="w-full text-left p-4 font-semibold flex justify-between items-center hover:bg-stone-50">
+                            No coffee is coming out.
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400"></i>
+                        </button>
+                        <div id="acc-3" class="hidden p-4 bg-stone-50 text-stone-600 text-sm border-t border-stone-100">
+                            <ul class="list-disc ml-4 space-y-1">
+                                <li>Did you tamp the coffee? <strong>Never tamp</strong> moka pot coffee.</li>
+                                <li>Is the grind too fine? (Like flour?) It should be like table salt.</li>
+                                <li>Is the safety valve leaking steam? The seal might be broken.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-auto bg-stone-200 py-6 text-center text-stone-500 text-sm">
+        <p>&copy; 2023 MokaMastery. Brewed with code.</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // --- TAB LOGIC ---
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('block'));
+            
+            // Show selected
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            document.getElementById(`view-${tabId}`).classList.add('block');
+
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab'));
+            document.getElementById(`tab-${tabId}`).classList.add('active-tab');
+        }
+
+        // --- ANATOMY LOGIC ---
+        const partData = {
+            'boiler': {
+                title: 'Boiler (Base)',
+                desc: 'Fill this with water just below the safety valve. Pro tip: Use pre-boiled water to prevent the coffee from "cooking" on the stove while the water heats up.'
+            },
+            'filter': {
+                title: 'Funnel & Filter',
+                desc: 'Hold the grounds here. Fill it loosely to the top. Do NOT tamp (press down)! Tamping creates too much pressure and leads to bitter, burnt coffee or explosions.'
+            },
+            'collector': {
+                title: 'Collector (Top Chamber)',
+                desc: 'The brewed coffee flows up the central chimney and collects here. Once you hear a gurgling sound, the water level in the base is low, and only steam is coming up. Stop the brew immediately.'
+            },
+            'lid': {
+                title: 'Lid & Knob',
+                desc: 'Keep the lid open during brewing to watch the flow! Close it only at the very end when the sputtering starts to avoid a mess.'
+            }
+        };
+
+        function showPartInfo(part) {
+            const info = partData[part];
+            const titleEl = document.getElementById('part-title');
+            const descEl = document.getElementById('part-desc');
+            
+            // Animation reset
+            const infoBox = document.getElementById('anatomy-info');
+            infoBox.classList.remove('slide-in');
+            void infoBox.offsetWidth; // Trigger reflow
+            infoBox.classList.add('slide-in');
+
+            titleEl.innerText = info.title;
+            descEl.innerText = info.desc;
+        }
+
+        // --- GUIDE LOGIC ---
+        const steps = [
+            {
+                title: "The Grind",
+                icon: "asterisk", 
+                content: "Use a <strong>Medium-Fine</strong> grind. It should feel like table salt. <br><br>If it's too fine (like espresso/flour), it will clog. If it's too coarse (like French Press), it will be sour and watery.",
+                tip: "Don't use store-bought 'Espresso' grind if you can avoid it; it's often too powdery."
+            },
+            {
+                title: "Water Prep",
+                icon: "droplets",
+                content: "Fill the bottom chamber with water up to <strong>just below the safety valve</strong>.<br><br><strong>Crucial Step:</strong> Boil your water in a kettle first, then pour it into the base. This reduces the time the coffee grounds sit on the hot stove.",
+                tip: "Use a towel to hold the base if adding hot water!"
+            },
+            {
+                title: "Filling the Basket",
+                icon: "arrow-down-to-line",
+                content: "Fill the funnel with coffee grounds until it is level with the top.<br><br><strong>DO NOT TAMP.</strong> I repeat, do not press it down. Level it off with your finger or a knife.",
+                tip: "Clean any loose grounds off the rim to ensure a tight seal."
+            },
+            {
+                title: "The Heat",
+                icon: "flame",
+                content: "Screw the top on tightly. Place on the stove on <strong>medium-low heat</strong>.<br><br>If the flame is licking up the sides, it's too high. We want a gentle build of pressure.",
+                tip: "Keep the lid OPEN so you can watch the magic happen."
+            },
+            {
+                title: "The Stop",
+                icon: "stop-circle",
+                content: "Rich, dark coffee will start to ooze out like honey. As the stream turns pale yellow and you hear a violent <em>gurgle</em>, remove from heat immediately.<br><br>Run the base under cold water to stop extraction instantly.",
+                tip: "Stopping early prevents that metallic, burnt taste."
+            }
+        ];
+
+        let currentStep = 0;
+
+        function renderGuide() {
+            const step = steps[currentStep];
+            const container = document.getElementById('step-container');
+            const progressBar = document.getElementById('progress-bar');
+            const indicator = document.getElementById('step-indicator');
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+
+            // Calculate progress percentage
+            const progress = ((currentStep + 1) / steps.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Update Text
+            indicator.innerText = `Step ${currentStep + 1} of ${steps.length}`;
+            
+            // Update Buttons
+            btnPrev.disabled = currentStep === 0;
+            btnPrev.style.opacity = currentStep === 0 ? "0.5" : "1";
+            
+            if (currentStep === steps.length - 1) {
+                btnNext.innerHTML = 'Finish <i data-lucide="check"></i>';
+                btnNext.classList.replace('bg-stone-800', 'bg-green-600');
+            } else {
+                btnNext.innerHTML = 'Next <i data-lucide="arrow-right"></i>';
+                btnNext.classList.replace('bg-green-600', 'bg-stone-800');
+            }
+
+            // Render Content with Animation
+            container.innerHTML = `
+                <div class="slide-in h-full flex flex-col">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-amber-100 rounded-full text-amber-700">
+                            <i data-lucide="${step.icon}" class="w-6 h-6"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold serif text-stone-800">${step.title}</h2>
+                    </div>
+                    
+                    <div class="text-lg text-stone-600 leading-relaxed mb-6 flex-grow">
+                        ${step.content}
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-auto">
+                        <div class="flex items-start gap-2">
+                            <i data-lucide="lightbulb" class="w-4 h-4 text-yellow-600 mt-1 flex-shrink-0"></i>
+                            <p class="text-sm text-yellow-800 italic"><strong>Pro Tip:</strong> ${step.tip}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function changeStep(direction) {
+            const newStep = currentStep + direction;
+            if (newStep >= 0 && newStep < steps.length) {
+                currentStep = newStep;
+                renderGuide();
+            }
+        }
+
+        // --- TIMER LOGIC ---
+        let timerInterval;
+        let seconds = 0;
+        let isRunning = false;
+
+        function updateTimerDisplay() {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('btn-timer-toggle');
+            const icon = document.getElementById('icon-play');
+            const text = document.getElementById('text-play');
+            const steam = document.getElementById('steam-container');
+
+            if (isRunning) {
+                // Pause
+                clearInterval(timerInterval);
+                isRunning = false;
+                text.innerText = "Resume";
+                icon.setAttribute('data-lucide', 'play');
+                btn.classList.replace('bg-red-600', 'bg-amber-600');
+                steam.style.opacity = '0';
+            } else {
+                // Start
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    updateTimerDisplay();
+                }, 1000);
+                text.innerText = "Stop";
+                icon.setAttribute('data-lucide', 'pause');
+                btn.classList.replace('bg-amber-600', 'bg-red-600');
+                steam.style.opacity = '1';
+            }
+            lucide.createIcons();
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            seconds = 0;
+            updateTimerDisplay();
+            
+            const btn = document.getElementById('btn-timer-toggle');
+            const icon = document.getElementById('icon-play');
+            const text = document.getElementById('text-play');
+            const steam = document.getElementById('steam-container');
+            
+            text.innerText = "Start Brew";
+            icon.setAttribute('data-lucide', 'play');
+            btn.classList.replace('bg-red-600', 'bg-amber-600');
+            steam.style.opacity = '0';
+            lucide.createIcons();
+        }
+
+        // --- RECIPE LAB LOGIC ---
+        let selectedIngredients = new Set();
+
+        function toggleIngredient(ing) {
+            const btn = document.getElementById(`ing-${ing}`);
+            
+            // Special rules for conflicts (optional, but good for UX)
+            if (ing === 'water' && selectedIngredients.has('milk')) {
+                toggleIngredient('milk'); // Uncheck milk if adding water
+            }
+            if (ing === 'milk' && selectedIngredients.has('water')) {
+                toggleIngredient('water'); // Uncheck water if adding milk
+            }
+
+            if (selectedIngredients.has(ing)) {
+                selectedIngredients.delete(ing);
+                btn.classList.remove('selected');
+            } else {
+                selectedIngredients.add(ing);
+                btn.classList.add('selected');
+            }
+            calculateRecipe();
+        }
+
+        function resetRecipe() {
+            selectedIngredients.clear();
+            document.querySelectorAll('.ingredient-btn').forEach(btn => btn.classList.remove('selected'));
+            calculateRecipe();
+        }
+
+        function calculateRecipe() {
+            const nameEl = document.getElementById('recipe-name');
+            const descEl = document.getElementById('recipe-desc');
+            const iconContainer = document.getElementById('recipe-icon');
+            let iconName = 'coffee';
+            let colorClass = 'text-amber-500';
+
+            // Logic Tree
+            const hasWater = selectedIngredients.has('water');
+            const hasMilk = selectedIngredients.has('milk');
+            const hasFoam = selectedIngredients.has('foam');
+            const hasIce = selectedIngredients.has('ice');
+            const hasTonic = selectedIngredients.has('tonic');
+            const hasChoc = selectedIngredients.has('chocolate');
+
+            // Default
+            let name = "Stovetop Espresso";
+            let desc = "The classic Moka brew. Intense, rich, and viscous. Similar to espresso but with a unique, slightly roasted profile.";
+
+            if (hasIce && hasTonic) {
+                name = "Espresso Tonic";
+                desc = "A modern classic. The bitterness of the tonic compliments the coffee's acidity. Refreshing and bubbly.";
+                iconName = "citrus";
+                colorClass = "text-yellow-400";
+            } else if (hasIce && hasMilk) {
+                name = "Iced Latte";
+                desc = "Smooth and cold. The milk softens the strong moka coffee. Perfect for a hot afternoon.";
+                iconName = "snowflake";
+                colorClass = "text-blue-300";
+            } else if (hasIce) {
+                name = "Iced Moka";
+                desc = "Simple and bold. Just the concentrated coffee over ice. Add a splash of water if it's too strong.";
+                iconName = "snowflake";
+                colorClass = "text-stone-400";
+            } else if (hasChoc && hasMilk) {
+                name = "Moka Mocha";
+                desc = "A chocolate lover's dream. The cocoa and coffee enhance each other's richness.";
+                iconName = "cookie";
+                colorClass = "text-amber-800";
+            } else if (hasMilk && hasFoam) {
+                name = "Cappuccino Style";
+                desc = "A breakfast staple. The foam adds texture while the milk cuts the bitterness.";
+                iconName = "cloud";
+                colorClass = "text-stone-200";
+            } else if (hasMilk) {
+                name = "Café au Lait";
+                desc = "Coffee with hot milk. Known as 'Mokaccino' in some places. Comforting and creamy.";
+                iconName = "milk";
+                colorClass = "text-stone-100";
+            } else if (hasWater) {
+                name = "Americano";
+                desc = "Diluting the moka concentrate with hot water creates a cup similar to drip coffee, but with more body.";
+                iconName = "droplets";
+                colorClass = "text-blue-400";
+            } else if (hasFoam) {
+                name = "Espresso Macchiato";
+                desc = "Just a 'mark' of foam on top of the strong coffee to add a little sweetness without diluting the strength.";
+                iconName = "cloud-rain";
+                colorClass = "text-stone-300";
+            } else if (hasChoc) {
+                name = "Caffè Marocchino";
+                desc = "A shot of coffee with a dusting of cocoa powder or chocolate syrup. Ideally served in a small glass.";
+                iconName = "cookie";
+            }
+
+            // Update DOM
+            nameEl.innerText = name;
+            descEl.innerText = desc;
+            
+            // Animation for change
+            nameEl.classList.remove('animate-pulse');
+            void nameEl.offsetWidth;
+            nameEl.classList.add('animate-pulse');
+
+            // Icon Update
+            iconContainer.innerHTML = `<i data-lucide="${iconName}" class="w-12 h-12 ${colorClass}"></i>`;
+            lucide.createIcons();
+        }
+
+
+        // --- TROUBLESHOOTING LOGIC ---
+        function toggleAccordion(id) {
+            const content = document.getElementById(`acc-${id}`);
+            content.classList.toggle('hidden');
+        }
+
+        // Quiz Logic
+        const quizData = [
+            {
+                q: "Should you tamp (press) the coffee grounds?",
+                options: ["Yes, hard.", "No, never.", "Just a little."],
+                correct: 1,
+                explanation: "Correct! Tamping creates too much pressure for a Moka pot."
+            },
+            {
+                q: "When should you stop the brew?",
+                options: ["When the top is full.", "When it bubbles violently.", "When you hear the first gurgle."],
+                correct: 2,
+                explanation: "Yes! That gurgle means water is out and only steam is passing through (burning the coffee)."
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            let html = '';
+            
+            quizData.forEach((item, index) => {
+                html += `
+                    <div class="mb-6 border-b border-stone-100 pb-4 last:border-0">
+                        <p class="font-semibold text-stone-800 mb-2">${index + 1}. ${item.q}</p>
+                        <div class="space-y-2">
+                            ${item.options.map((opt, i) => `
+                                <button onclick="checkAnswer(${index}, ${i}, this)" class="w-full text-left px-3 py-2 rounded border border-stone-200 hover:bg-stone-50 text-sm transition-colors quiz-btn-${index}">
+                                    ${opt}
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div id="feedback-${index}" class="hidden mt-2 text-sm font-medium"></div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function checkAnswer(qIndex, optIndex, btnElement) {
+            const question = quizData[qIndex];
+            const feedback = document.getElementById(`feedback-${qIndex}`);
+            const allBtns = document.querySelectorAll(`.quiz-btn-${qIndex}`);
+
+            // Disable all buttons for this question
+            allBtns.forEach(b => b.disabled = true);
+
+            if (optIndex === question.correct) {
+                btnElement.classList.add('bg-green-100', 'border-green-300', 'text-green-800');
+                feedback.innerText = question.explanation;
+                feedback.classList.add('text-green-700');
+            } else {
+                btnElement.classList.add('bg-red-50', 'border-red-200', 'text-red-800');
+                feedback.innerText = "Not quite. " + question.explanation;
+                feedback.classList.add('text-red-700');
+            }
+            feedback.classList.remove('hidden');
+        }
+
+        // --- INIT ---
+        window.onload = () => {
+            renderGuide();
+            renderQuiz();
+        };
+
+    </script>
+</body>
+</html>
